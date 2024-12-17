@@ -1,9 +1,10 @@
-import { Controller, Post, Body, Get, Param} from "@nestjs/common";
+import { Controller, Post, Body, Get, Param, UseGuards} from "@nestjs/common";
 import { BorrowingService } from "./borrowing.service";
 import { Borrowing, BorrowingDto } from "./schema/borrow.schema";
-import { BookService } from "src/books/book.service";
 import { Role } from "src/roles/role.enum";
 import { Roles } from "src/roles/roles.decorator";
+import { RolesGuard } from "src/roles/roles.guard";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 
 @Controller("borrowing")
@@ -13,6 +14,7 @@ export class BorrowingController {
     
     @Get()
     @Roles(Role.Admin)
+    @UseGuards(RolesGuard,JwtAuthGuard)
     async getBorrowings():Promise<{message:string, borrowings:Borrowing[], count:any}>{
         const count = await this.borrowingService.findAll();
         return {
@@ -21,6 +23,8 @@ export class BorrowingController {
         };
     }
     @Get(':id')
+    @Roles(Role.Admin)
+    @UseGuards(RolesGuard,JwtAuthGuard)
     async getBorrowingById(@Param('id') id: string): Promise<{ message: string; borrowings: Borrowing[], count: number }> {
         const borrowings = await this.borrowingService.findAll();
         const userBorrowings = borrowings.filter(borrowing => borrowing.userId === id);
@@ -33,6 +37,8 @@ export class BorrowingController {
     }
     
     @Post('borrow')
+    @Roles(Role.Admin,Role.User)
+    @UseGuards(RolesGuard,JwtAuthGuard)
     async barrowBook(@Body() borrowing: BorrowingDto): Promise<{message: string, book: Borrowing}> {
         return {
             message: "Book borrowed successfully",
@@ -41,7 +47,8 @@ export class BorrowingController {
     }
 
     @Post("bookreturn")
-    async returnBook(@Body("userId") userId:string, @Body("bookId") bookId:string):Promise<{message:string, book:Borrowing}>{  
+    async returnBook(@Body("userId") userId:string, 
+    @Body("bookId") bookId:string):Promise<{message:string, book:Borrowing}>{  
         return {message:"Book returned successfully",
             book:await this.borrowingService.findByUserIdAndBookId(userId,bookId),
         }; 

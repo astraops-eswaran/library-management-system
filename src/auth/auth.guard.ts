@@ -22,9 +22,7 @@ export class AuthGuard implements CanActivate{
         if(isPublic){
             //
             return true;
-        }  
-       
-        console.log('AuthGuard is running');   
+        }    
 
         const request = context.switchToHttp().getRequest();
         const authHeader = request.headers.authorization;

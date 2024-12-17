@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { optional, z } from "zod";
 import { createZodDto } from "@anatine/zod-nestjs";
 
 
@@ -9,6 +9,7 @@ export const BookSchema = z.object({
     description: z.string(),
     price: z.number(),
     category: z.enum(['Adventure', 'Fantasy', 'Crime', 'Self-Help', 'Fiction']),
+    count:z.number().optional(),
 });
 
 

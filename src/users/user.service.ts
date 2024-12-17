@@ -11,7 +11,6 @@ export class UserService {
     //create a new user
     async create(user: CreateUserDto): Promise<User> {
         const createdUser = new this.userModel(user);
-        console.log(createdUser)
         return createdUser.save();  
     }
     async findAll(): Promise<User[]> {

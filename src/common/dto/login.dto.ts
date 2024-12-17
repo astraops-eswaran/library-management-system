@@ -1,3 +1,4 @@
+import { createZodDto } from "@anatine/zod-nestjs";
 import { z } from "zod";
 
 export const LoginSchema = z.object({
@@ -6,4 +7,4 @@ export const LoginSchema = z.object({
 });
 
 export type LoginSchema = z.infer<typeof LoginSchema>;
-export type LoginDto = LoginSchema;
+export class LoginDto extends createZodDto(LoginSchema){}

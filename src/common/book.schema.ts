@@ -7,4 +7,5 @@ export const BookSchema = new mongoose.Schema({
     description: String,
     price: Number,
     category: String,
+    count:Number,
 });
