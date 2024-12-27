@@ -1,0 +1,53 @@
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { Model } from "mongoose";
+import { Borrowing, BorrowingDto } from "./schema/borrow.schema";
+import { BorrowingSchema } from "../common/borrowing.schema"
+import { MongodbService } from "../mongodb/database.service";
+import { MongooseConnectionStatus } from "../common/connection.schema";
+
+
+@Injectable()
+export class BorrowRepositary{
+    
+    constructor(
+        protected readonly mongodbService:MongodbService
+    ){}
+
+    async getModel(): Promise<Model<Borrowing>>{
+        const conn = this.mongodbService.mongooseConnection;
+        if(conn.status === MongooseConnectionStatus.enum.connected){
+            return conn.connection.connection.model<Borrowing>("Borrowing",BorrowingSchema);
+        }
+        throw new BadRequestException('error for connection db')
+    }
+    async create(borrowingData: BorrowingDto): Promise<Borrowing> {
+        const BorrowingModel = await this.getModel();
+        const newBorrowing = new BorrowingModel(borrowingData);
+        return await newBorrowing.save();
+    }
+    async findAll():Promise<Borrowing[]>{
+        return (await this.getModel()).find()
+    }
+    async findById(id:string): Promise<Borrowing>{
+        return (await this.getModel()).findById(id);
+    } 
+    async delete(id:string):Promise<Borrowing>{
+        return (await this.getModel()).findByIdAndDelete(id);
+    }
+    async findByUserIdAndBookId(userId:string, bookId:string):Promise<Borrowing>{
+        return ((await this.getModel()).findOne({userId,bookId}))
+    }
+    async findByUserId(userId: string): Promise<Borrowing[]> {
+        return (await this.getModel()).find({ userId }).exec(); 
+    }
+    async findOne(userId:string, bookId:string):Promise<Borrowing>{
+        return ((await this.getModel()).findOne({bookId,userId}));
+    }
+    async findByIdAndDelete(id: string): Promise<Borrowing | null> {
+        return (await this.getModel()).findByIdAndDelete(id).exec();
+    }
+    async findOneAndDelete(id:string): Promise<Borrowing | null> {
+        const BorrowingModel = await this.getModel();
+        return await BorrowingModel.findOneAndDelete({_id: id}).exec();
+    }
+}
