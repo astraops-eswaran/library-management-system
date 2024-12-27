@@ -4,7 +4,8 @@ import { BookService } from "./book.service";
 import { Module } from "@nestjs/common";
 import { BookSchema } from "../common/book.schema";
 import { DatabaseModule } from "../mongodb/database.module";
-import { bookProviders } from "./book.provider";
+import { BookRepositary } from "./book.repositary";
+
 
 
 
@@ -14,7 +15,8 @@ import { bookProviders } from "./book.provider";
     controllers: [BookController],
     //providers: [BookService],
     providers: [
-        BookService, ...bookProviders,
+        BookService,
+        BookRepositary
     ],
     exports: [BookService]
 })

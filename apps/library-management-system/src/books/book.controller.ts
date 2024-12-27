@@ -36,7 +36,7 @@ export class BookController {
     @Put(":id")
     @Roles(Role.Admin)
     @UseGuards(RolesGuard,JwtAuthGuard)
-    async updateBook(@Param("id") id: string, @Body() book: UpdateBookDto): Promise<{message: string, book: Book}> {
+    async updateBook(@Param("id") id: string, @Body() book: UpdateBookDto): Promise<{message: string, book: Book[]}> {
         return {message:"Book updated successfully", book: await this.bookService.update(id, book)}   ;
     }
 

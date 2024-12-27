@@ -4,18 +4,26 @@ import { Model } from "mongoose";
 import { Borrowing, BorrowingDto } from "./schema/borrow.schema";
 import { UserService } from "../users/user.service";
 import { BookService } from "../books/book.service";
+import { BorrowRepositary } from "./borrowing.repositary";
 
 @Injectable()
 export class BorrowingService {
-    constructor(@Inject("BORROWING_MODEL") private borrowingModel: Model<Borrowing>,
-    private bookService:BookService,
-    private userService:UserService) {}
+    // constructor(
+    //     //@Inject("BORROWING_MODEL") private borrowRepo: Model<Borrowing>,
+    //     
+
+    // ) {}
+    constructor(
+        private bookService:BookService,
+        private userService:UserService,
+        private readonly borrowRepo:BorrowRepositary
+    ){}
 
     async findById(id:string):Promise<Borrowing>{
-        return this.borrowingModel.findById(id);
+        return await this.borrowRepo.findById(id);
     }
     async findAll():Promise<Borrowing[]>{
-        return this.borrowingModel.find();
+        return await this.borrowRepo.findAll();
     }
 
     //borrow a book in the library by the user
@@ -25,7 +33,7 @@ export class BorrowingService {
             throw new BadRequestException(`${missingField} is required`);
         }
     
-        const getUser = await this.userService.getUser(borrowing.userId);
+        const getUser = await this.userService.findById(borrowing.userId);
         if (!getUser) {
             throw new BadRequestException("User not found");
         }
@@ -40,18 +48,17 @@ export class BorrowingService {
         }
     
         // Check if the book is already borrowed by the user
-        const existBook = await this.borrowingModel.findOne({
-            bookId: borrowing.bookId,
-            userId: borrowing.userId,
-        });
+        const existBook = await this.borrowRepo.findOne(
+             borrowing.bookId,
+             borrowing.userId,
+        );
+        
         if (existBook) {
             throw new BadRequestException("This book is already borrowed by the user.");
         }
     
         // Check if the user has borrowed more than 4 books
-        const userBorrowings = await this.borrowingModel.find({
-            userId: borrowing.userId,
-        });
+        const userBorrowings = await this.borrowRepo.findByUserId(borrowing.userId);
     
         if (userBorrowings.length >= 4) {
             throw new BadRequestException("You cannot borrow more than 4 books at a time.");
@@ -62,9 +69,9 @@ export class BorrowingService {
         await this.bookService.update(getBook.id, {count:getBook.count});
 
         // Create a new borrowing record
-        const newBorrowing = await this.borrowingModel.create({
+        const newBorrowing = await this.borrowRepo.create({
             ...borrowing,
-            title: getBook.title, // Save book title for reference
+            title: getBook.title, 
         });
         return newBorrowing;
     }
@@ -72,19 +79,18 @@ export class BorrowingService {
 
     //delete the borrowing record
     async delete(id:string):Promise<Borrowing>{
-        const returnedBook = await this.borrowingModel.findByIdAndDelete(id);
+        const returnedBook = await this.borrowRepo.findByIdAndDelete(id);
         return returnedBook;
     }
 
     async findByUserIdAndBookId(userId:string, bookId:string):Promise<Borrowing>{
-        let borrowing = await this.borrowingModel.findOne({userId,bookId});
+        let borrowing = await this.borrowRepo.findOne(userId,bookId)
         if (!borrowing) {
             throw new BadRequestException("Book returned not found");
         }
         if(userId && bookId){
-            const res = await this.borrowingModel.findOneAndDelete({_id:borrowing._id});
-
-            const dueDate =  new Date('2024-12-01'); //borrowing.returnDate
+            const res = await this.borrowRepo.findOneAndDelete(borrowing.id); 
+            const dueDate =  new Date(borrowing.returnDate); 
             const currentDate = new Date()
 
             //collecting fine for over the due date of returning the book

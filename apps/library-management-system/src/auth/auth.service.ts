@@ -12,7 +12,10 @@ import { UserService } from "../users/user.service";
 
 @Injectable()
 export class AuthService {
-    constructor(private userService: UserService,private jwtService:JwtService) {}
+    constructor(
+        private userService: UserService,
+        private jwtService:JwtService,
+    ) {}
 
 
     async signUp(registerDto:RegisterDto):Promise<{message:string,user:User}>{
