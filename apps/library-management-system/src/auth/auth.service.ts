@@ -12,9 +12,11 @@ import { UserService } from "../users/user.service";
 
 @Injectable()
 export class AuthService {
+
     constructor(
         private userService: UserService,
         private jwtService:JwtService,
+        private tokenBlocklist: Set<string> = new Set()
     ) {}
 
 
@@ -58,4 +60,13 @@ export class AuthService {
             access_token: await this.jwtService.signAsync(payload)
         };   
     } 
+    //logout the session
+    async logout(token:string):Promise<{message:string}>{
+        this.tokenBlocklist.add(token);
+        return { message: 'Logout successful' };
+    }
+
+    isTokenBlocklisted(token: string): boolean {
+        return this.tokenBlocklist.has(token);
+    }
 }

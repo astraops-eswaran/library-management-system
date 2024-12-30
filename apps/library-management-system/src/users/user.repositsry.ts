@@ -19,16 +19,16 @@ export class UserRepositary{
     private async getModel(): Promise<Model<User>>{
         const conn = this.mongodbService.mongooseConnection;
         if(conn.status === MongooseConnectionStatus.enum.connected){
-            return conn.connection.connection.model<User>("User",UserSchema);
+            return conn.connection.connection.useDb("libraryassets").model<User>("User",UserSchema);
         }
-        throw new BadRequestException('error connection db')
+        throw new BadRequestException('Database connection error: connection is null or not established');
     }
 
     async create(user: CreateUserDto):Promise<User>{
         return(await this.getModel()).create(user);
     }
     async findAll():Promise<User[]>{
-        return (await this.getModel()).find()
+        return (await this.getModel()).find();
     }
     async findById(id:string): Promise<User>{
         return (await this.getModel()).findById(id);

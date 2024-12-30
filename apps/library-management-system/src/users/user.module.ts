@@ -6,6 +6,8 @@ import { UserService } from "./user.service";
 import { DatabaseModule } from "../mongodb/database.module";
 //import { userProviders } from "./user.provider";
 import { UserRepositary } from "./user.repositsry";
+import { BorrowRepositary } from "../borrowing/borrowing.repositary";
+
 
 
 @Module({
@@ -13,7 +15,8 @@ import { UserRepositary } from "./user.repositsry";
   controllers: [UserController],
   providers: [
     UserService,
-    UserRepositary
+    UserRepositary,
+    BorrowRepositary
   ],
   exports:[UserService],
 })

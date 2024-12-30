@@ -1,18 +1,15 @@
-import { Injectable, BadRequestException, Inject } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Injectable, BadRequestException, Inject, Param } from "@nestjs/common";
 import { Borrowing, BorrowingDto } from "./schema/borrow.schema";
 import { UserService } from "../users/user.service";
 import { BookService } from "../books/book.service";
 import { BorrowRepositary } from "./borrowing.repositary";
+import { Types } from "mongoose";
 
 @Injectable()
 export class BorrowingService {
     // constructor(
     //     //@Inject("BORROWING_MODEL") private borrowRepo: Model<Borrowing>,
-    //     
-
-    // ) {}
+    //) {}
     constructor(
         private bookService:BookService,
         private userService:UserService,
@@ -25,7 +22,16 @@ export class BorrowingService {
     async findAll():Promise<Borrowing[]>{
         return await this.borrowRepo.findAll();
     }
-
+    // async getBorrowingById(@Param('id') id: string): Promise<{ message: string; borrowings: Borrowing[], count: number }> {
+    //     const borrowings = await this.borrowingService.findAll();
+    //     const userBorrowings = borrowings.filter(borrowing => borrowing.userId === id);
+    
+    //     return {
+    //         message: "Borrowings fetched successfully",
+    //         borrowings: userBorrowings,
+    //         count: userBorrowings.length
+    //     };
+    // }
     //borrow a book in the library by the user
     async barrowBook(borrowing: BorrowingDto): Promise<Borrowing> {
         if (!borrowing.bookId || !borrowing.userId) {
@@ -82,14 +88,15 @@ export class BorrowingService {
         const returnedBook = await this.borrowRepo.findByIdAndDelete(id);
         return returnedBook;
     }
-
     async findByUserIdAndBookId(userId:string, bookId:string):Promise<Borrowing>{
         let borrowing = await this.borrowRepo.findOne(userId,bookId)
         if (!borrowing) {
             throw new BadRequestException("Book returned not found");
         }
+        
+        console.log("borrowing: "+borrowing);
         if(userId && bookId){
-            const res = await this.borrowRepo.findOneAndDelete(borrowing.id); 
+            const res = await this.borrowRepo.findOneAndDelete(borrowing._id.toString()); 
             const dueDate =  new Date(borrowing.returnDate); 
             const currentDate = new Date()
 
@@ -106,7 +113,7 @@ export class BorrowingService {
                 console.log('No fine. The payment is within the due date.');
             }
             const book = await this.bookService.findById(bookId);
-            book.count +=1; 
+            book.count +=1;
             await this.bookService.update(book.id,{count:book.count})
             return res;
         }
