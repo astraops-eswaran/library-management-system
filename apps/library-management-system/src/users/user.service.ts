@@ -1,5 +1,3 @@
-import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
 import { UpdateUserDto, User } from "./schema/user.schema";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateUserDto } from "./schema/user.schema";

@@ -10,7 +10,6 @@ import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { AuthGuard } from './auth/auth.guard';
 import { DatabaseModule } from './mongodb/database.module';
-import { MailModule } from './mailer/mail.module';
 
 
 @Module({
@@ -26,7 +25,6 @@ import { MailModule } from './mailer/mail.module';
     AuthModule,
     DatabaseModule,
     MongooseModule,
-    MailModule
   ],
   providers:[
     {

@@ -6,6 +6,7 @@ export const BorrowingSchema = z.object({
     bookId: z.string(),
     userId: z.string(),
     title: z.string(),
+    emailId:z.string(),
     borrowDate: z.date(),
     returnDate: z.date(),
     count: z.number(),

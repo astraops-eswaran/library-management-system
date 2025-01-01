@@ -3,7 +3,9 @@ import { Borrowing, BorrowingDto } from "./schema/borrow.schema";
 import { UserService } from "../users/user.service";
 import { BookService } from "../books/book.service";
 import { BorrowRepositary } from "./borrowing.repositary";
-import { Types } from "mongoose";
+import { Book } from "../books/schema/book.schema";
+
+
 
 @Injectable()
 export class BorrowingService {
@@ -22,16 +24,7 @@ export class BorrowingService {
     async findAll():Promise<Borrowing[]>{
         return await this.borrowRepo.findAll();
     }
-    // async getBorrowingById(@Param('id') id: string): Promise<{ message: string; borrowings: Borrowing[], count: number }> {
-    //     const borrowings = await this.borrowingService.findAll();
-    //     const userBorrowings = borrowings.filter(borrowing => borrowing.userId === id);
-    
-    //     return {
-    //         message: "Borrowings fetched successfully",
-    //         borrowings: userBorrowings,
-    //         count: userBorrowings.length
-    //     };
-    // }
+
     //borrow a book in the library by the user
     async barrowBook(borrowing: BorrowingDto): Promise<Borrowing> {
         if (!borrowing.bookId || !borrowing.userId) {
@@ -77,11 +70,11 @@ export class BorrowingService {
         // Create a new borrowing record
         const newBorrowing = await this.borrowRepo.create({
             ...borrowing,
-            title: getBook.title, 
+            title: getBook.title,
+            emailId:getUser.emailId, 
         });
         return newBorrowing;
     }
-    
 
     //delete the borrowing record
     async delete(id:string):Promise<Borrowing>{
@@ -94,7 +87,6 @@ export class BorrowingService {
             throw new BadRequestException("Book returned not found");
         }
         
-        console.log("borrowing: "+borrowing);
         if(userId && bookId){
             const res = await this.borrowRepo.findOneAndDelete(borrowing._id.toString()); 
             const dueDate =  new Date(borrowing.returnDate); 

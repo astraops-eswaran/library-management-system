@@ -5,6 +5,7 @@ export const BorrowingSchema = new mongoose.Schema({
     id: String,
     bookId: String,
     userId: String,
+    emailId:String,
     title: String,
     borrowDate: { type: Date, default: new Date() },
     returnDate: { type: Date, default: () => {

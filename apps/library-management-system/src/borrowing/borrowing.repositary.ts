@@ -4,6 +4,7 @@ import { Borrowing, BorrowingDto } from "./schema/borrow.schema";
 import { BorrowingSchema } from "../common/borrowing.schema"
 import { MongodbService } from "../mongodb/database.service";
 import { MongooseConnectionStatus } from "../common/connection.schema";
+import { Book } from "../books/schema/book.schema";
 
 
 @Injectable()
@@ -28,9 +29,16 @@ export class BorrowRepositary{
     async findAll():Promise<Borrowing[]>{
         return (await this.getModel()).find()
     }
+    
     async findById(id:string): Promise<Borrowing>{
         return (await this.getModel()).findById(id);
     } 
+
+    async getDueSoonBooks(query: any): Promise<Book[]> {
+        const model = await this.getModel();
+        return model.find({ title: query.title, returnDate: { $lte: query.returnDate } });
+    }
+
     async delete(id:string):Promise<Borrowing>{
         return (await this.getModel()).findByIdAndDelete(id);
     }
