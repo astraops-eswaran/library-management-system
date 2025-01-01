@@ -26,14 +26,10 @@ export class BorrowingController {
     @Get(':id')
     @Roles(Role.Admin)
     @UseGuards(RolesGuard,JwtAuthGuard)
-    async getBorrowingById(@Param('id') id: string): Promise<{ message: string; borrowings: Borrowing[], count: number }> {
-        const borrowings = await this.borrowingService.findAll();
-        const userBorrowings = borrowings.filter(borrowing => borrowing.userId === id);
-    
+    async getBorrowingById(@Param('id') id: string): Promise<{ message: string, borrowings: Borrowing }> {
         return {
             message: "Borrowings fetched successfully",
-            borrowings: userBorrowings,
-            count: userBorrowings.length
+            borrowings: await this.borrowingService.findById(id)
         };
     }
     
@@ -48,7 +44,8 @@ export class BorrowingController {
     }
 
     @Post("bookreturn")
-    async returnBook(@Body("userId") userId:string, 
+    async returnBook(
+    @Body("userId") userId:string, 
     @Body("bookId") bookId:string):Promise<{message:string, book:Borrowing}>{  
         return {message:"Book returned successfully",
             book:await this.borrowingService.findByUserIdAndBookId(userId,bookId),

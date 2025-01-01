@@ -24,7 +24,6 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles || requiredRoles.length === 0) {
       return true;
     }
-
     // Extract the user from the request
     const { user } = context.switchToHttp().getRequest();
 
@@ -41,6 +40,7 @@ export class RolesGuard implements CanActivate {
 
     // Check if the user has at least one of the required roles
     const hasRole = requiredRoles.some((role) => user.role.includes(role));
+    //return requiredRoles.some((role) => user?.role === role);
 
     if (!hasRole) {
       throw new HttpException(

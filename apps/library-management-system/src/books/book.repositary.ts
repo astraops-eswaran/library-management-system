@@ -3,10 +3,7 @@ import { MongodbService } from "../mongodb/database.service";
 import { Book, CreateBookDto, UpdateBookDto } from "./schema/book.schema";
 import { MongooseConnectionStatus } from "../common/connection.schema";
 import { BookSchema } from "../common/book.schema";
-import { model, Model,Types } from "mongoose";
-import { UpdateUserDto } from "../users/schema/user.schema";
-import { User } from "../users/schema/user.schema";
-
+import {  Model } from "mongoose";
 
 
 @Injectable()
@@ -19,7 +16,7 @@ export class BookRepositary{
    private async getModel(): Promise<Model<Book>>{
         const conn = this.mongodbService.mongooseConnection;
         if(conn.status === MongooseConnectionStatus.enum.connected){
-            return conn.connection.connection.model<Book>("Book",BookSchema);
+            return conn.connection.connection.useDb("libraryassets").model<Book>("Book",BookSchema);
         }
         throw new BadRequestException('Database connection error: connection is null or not established');
     }

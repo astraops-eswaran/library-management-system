@@ -24,7 +24,7 @@ import { DatabaseModule } from './mongodb/database.module';
     BorrowingModule,
     AuthModule,
     DatabaseModule,
-    MongooseModule
+    MongooseModule,
   ],
   providers:[
     {

@@ -1,14 +1,16 @@
-import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
 import { UpdateUserDto, User } from "./schema/user.schema";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateUserDto } from "./schema/user.schema";
 import { UserRepositary } from "./user.repositsry";
+import { BorrowRepositary } from "../borrowing/borrowing.repositary";
+
+
 
 @Injectable()
 export class UserService {
     constructor(
-        private readonly userRepo: UserRepositary
+        private readonly userRepo: UserRepositary,
+        private readonly borrowRepo:BorrowRepositary
     ) {
         if (!userRepo) {
             throw new Error('UserRepositary is not initialized');
@@ -35,6 +37,7 @@ export class UserService {
         return (await this.userRepo.findById(id));
     }
     async findOne(username: string): Promise<User> {
+        
         return (await this.userRepo.findOne(username));
     }
     async update(id: string, user: UpdateUserDto): Promise<User[]> {
@@ -44,6 +47,10 @@ export class UserService {
         const deletedUser = await this.userRepo.findByIdAndDelete(id);
         if(!deletedUser) {
             throw new NotFoundException('User not found');
+        }
+        const isBooksReturned = await this.borrowRepo.findByUserId(id)
+        if(isBooksReturned.length > 0){
+            throw new Error('User cannot be deleted because they have not returned the books');
         }
         return {message: 'User removed successfully', user:deletedUser};
     }
