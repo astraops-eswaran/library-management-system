@@ -1,11 +1,9 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { CreateUserDto, UpdateUserDto, User } from "./schema/user.schema";
-import { Model, Types } from "mongoose";
+import { Model } from "mongoose";
 import { MongodbService } from "../mongodb/database.service";
 import { MongooseConnectionStatus } from "../common/connection.schema";
 import { UserSchema } from "../common/user.schema";
-
-
 
 
 @Injectable()
@@ -13,7 +11,9 @@ import { UserSchema } from "../common/user.schema";
 export class UserRepositary{
     
 
-    constructor(protected readonly mongodbService:MongodbService) {
+    constructor(
+        protected readonly mongodbService:MongodbService,
+    ) {
     }
 
     private async getModel(): Promise<Model<User>>{

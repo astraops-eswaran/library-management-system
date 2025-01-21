@@ -6,7 +6,6 @@ import { BorrowRepositary } from "./borrowing.repositary";
 import { Book } from "../books/schema/book.schema";
 
 
-
 @Injectable()
 export class BorrowingService {
     // constructor(
@@ -15,7 +14,7 @@ export class BorrowingService {
     constructor(
         private bookService:BookService,
         private userService:UserService,
-        private readonly borrowRepo:BorrowRepositary
+        private readonly borrowRepo:BorrowRepositary,
     ){}
 
     async findById(id:string):Promise<Borrowing>{
@@ -88,7 +87,7 @@ export class BorrowingService {
         }
         
         if(userId && bookId){
-            const res = await this.borrowRepo.findOneAndDelete(borrowing._id.toString()); 
+            const res = await this.borrowRepo.findOneAndDelete(borrowing.id.toString()); 
             const dueDate =  new Date(borrowing.returnDate); 
             const currentDate = new Date()
 
@@ -106,7 +105,7 @@ export class BorrowingService {
             }
             const book = await this.bookService.findById(bookId);
             book.count +=1;
-            await this.bookService.update(book.id,{count:book.count})
+            await this.bookService.update(book.id,{count:book.count});
             return res;
         }
         throw new BadRequestException("User id and book id are required");

@@ -10,8 +10,23 @@ export class DatabaseController{
         private readonly databaseService:MongodbService
     ){}
 
-    @Get()
+    @Get('status')
     async getstatus(){
         return this.databaseService.mongooseConnection.status;
+    }
+
+    @Get('connection')
+    async getConnection(){
+        return this.databaseService.mongooseConnection.connection;
+    }
+
+    @Get('disconnect')
+    async disconnect(){
+        return this.databaseService.disconnect();
+    }
+
+    @Get('connect')
+    async connect(){
+        return this.databaseService.connect();
     }
 }

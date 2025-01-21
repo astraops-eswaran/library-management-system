@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigService } from "@nestjs/config";
 import { UserModule } from './users/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { BookModule } from './books/book.module';
@@ -10,21 +9,21 @@ import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { AuthGuard } from './auth/auth.guard';
 import { DatabaseModule } from './mongodb/database.module';
+import { StatsModule } from './stats/stats.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 
 @Module({
   imports: [
     ConfigModule.forRoot({isGlobal: true}),
-    // MongooseModule.forRootAsync({
-    //   useFactory: (configService: ConfigService) => ({uri: configService.get('DB_URI')}),
-    //   inject: [ConfigService],
-    // }),
     UserModule,
     BookModule,
     BorrowingModule,
     AuthModule,
     DatabaseModule,
     MongooseModule,
+    StatsModule,
+    EventEmitterModule.forRoot(),
   ],
   providers:[
     {

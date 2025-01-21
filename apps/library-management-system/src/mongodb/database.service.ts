@@ -74,9 +74,4 @@ export class MongodbService implements OnModuleInit {
     this.logger.log('Database disconnected successfully');
     return this.mongooseConnection.status;
    }
-
-   getStatus(): string {
-    return this.mongooseConnection.status;
-  }
-
 }
