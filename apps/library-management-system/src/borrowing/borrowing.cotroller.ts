@@ -34,7 +34,7 @@ export class BorrowingController {
     }
     
     @Post('borrow')
-    @Roles(Role.Admin,Role.User)
+    @Roles(Role.Admin,Role.User,Role.Staff,Role.Student)
     @UseGuards(RolesGuard,JwtAuthGuard)
     async barrowBook(@Body() borrowing: BorrowingDto): Promise<{message: string, book: Borrowing}> {
         return {

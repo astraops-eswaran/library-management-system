@@ -9,12 +9,11 @@ import { DatabaseModule } from "../mongodb/database.module";
 // import { borrowProviders } from "./borrow.provider";
 import { BorrowRepositary } from "./borrowing.repositary";
 
-
 @Module({
     imports: [
     DatabaseModule,
     BookModule,
-    UserModule
+    UserModule,
 ],
     controllers: [BorrowingController],
     providers: [
